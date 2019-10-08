@@ -1,0 +1,100 @@
+<!DOCTYPE html >
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>书籍添加界面</title>
+    <link th:href="@{/scripts/webuploader/webuploader.css}"/>
+</head>
+<body>
+<h3>书籍添加界面</h3>
+<div id="div-index">
+    书名：<input type="text" v-model="Book.name">
+    发布时间：<input type="text" v-model="Book.publishtime" id="txtPublishTime">
+    发布状态：
+    <select v-model="Book.publishstatus">
+        <option disabled value="">请选择</option>
+        <option value="Published">已发布</option>
+        <option value="Test">测试</option>
+        <option value="NotPublished">未发布</option>
+    </select>
+    书籍封面：<input type="text" v-model="Book.bookCover">
+    <div id="uploadFile" class="btn btn-md grey ml-10">浏览</div>
+    <input type="button" v-on:click="SubmitBook" value="添加"/>
+</div>
+</body>
+<script th:src="@{/scripts/My97DatePicker/WdatePicker.js}"></script>
+<script th:src="@{/scripts/jquery.min.js}"></script>
+<script th:src="@{/scripts/vue/vue.js}"></script>
+<script th:src="@{/scripts/vue/vue-resource.js}"></script>
+<script th:src="@{/scripts/webuploader/webuploader.html5only.js}"></script>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#div-index',
+        data: {
+            Book: {
+                name: '',
+                publishtime: '',
+                publishstatus: '',
+                bookCover: ''
+            },
+            uploader: null,
+            HasFile: false,
+            File: null
+        },
+        mounted: function () {
+            this.initUploader();
+            $("#txtPublishTime").on("click", function () {
+                WdatePicker({
+                    onpicked: function (dp) {
+                        vm.Book.publishtime = dp.cal.getNewDateStr();
+                    },
+                    dateFmt: 'yyyy-MM-dd HH:mm:ss',
+                    minDate: '#{%y-1}-%M-#{%d+1}'
+                });
+            });
+        },
+        methods: {
+            initUploader: function () {
+                this.uploader = WebUploader.create({
+                    // 选完文件后,是否自动上传.
+                    auto: true,
+                    server: '/book/upload',
+                    // 选择文件的按钮.可选.
+                    // 内部根据当前运行是创建,可能是input元素,也可能是flash.
+                    pick: {
+                        id: '#uploadFile',
+                        multiple: false
+                    },
+                    fileNumLimit: 1,
+                    // 只允许选择图片文件.
+                    accept: {
+                        title: 'excel',
+                        extensions: 'jpg,png',
+                        mimeTypes: 'image/*'
+                    }
+                });
+                this.uploader.on('fileQueued', function (file) {
+                    vm.HasFile = true;
+                    console.log(file);
+                    vm.File = file;
+                });
+                this.uploader.on('uploadSuccess', function (file, response) {
+                    console.log(response);
+                    vm.Book.bookCover = response._raw;
+
+                });
+            },
+            SubmitBook: function () {
+                this.$http.post("/book/insert", this.Book)
+                    .then(function (response) {
+                        var data = response.data;
+                        debugger
+                    })
+                    .catch(function (response) {
+
+                    });
+            }
+        }
+    });
+</script>
+</html>
