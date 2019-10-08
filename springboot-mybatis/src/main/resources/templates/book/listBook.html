@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="div-index">
+    <table>
+        <thead>
+        <tr>
+            <td>名称</td>
+            <td>发布时间</td>
+            <td>封面</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in BookList">
+            <td>{{item.name}}</td>
+            <td>{{item.publishtime}}</td>
+            <td><img style="width: 300px;height: 400px" v-bind:src="'/'+item.bookCover"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script th:src="@{/scripts/vue/vue.js}"></script>
+<script th:src="@{/scripts/vue/vue-resource.js}"></script>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#div-index',
+        data: {
+            BookList: []
+        },
+        mounted: function () {
+            this.listBooks();
+        },
+        methods: {
+            listBooks: function () {
+                this.$http.post("/book/list")
+                    .then(function (response) {
+                        var data = response.data;
+                        this.BookList=data;
+                    })
+                    .catch(function (response) {
+
+                    });
+            }
+        }
+    });
+</script>
+</body>
+</html>
