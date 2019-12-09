@@ -2,6 +2,7 @@ package com.wayfather.springbooteasypoi.common;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 /**
  * @author IBM
@@ -20,9 +21,8 @@ public class DownloadWriter {
      * @throws IOException
      */
     public static void writeToResponse(HttpServletResponse response, byte[] bytesData, String contentType, String fileName) throws IOException {
-        fileName = new String(fileName.getBytes("GBK"), "iso-8859-1");
         response.setContentType(contentType);
-        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
         response.setContentLength(bytesData.length);
         response.getOutputStream().write(bytesData);
         response.getOutputStream().flush();

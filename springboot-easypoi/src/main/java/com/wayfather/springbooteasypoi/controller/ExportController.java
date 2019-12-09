@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +66,7 @@ public class ExportController {
             workbook.write(outPut);
             byte[] bytes = outPut.toByteArray();
             String fileName = "业务结算单.xlsx";
-            fileName = new String(fileName.getBytes("GBK"), "iso-8859-1");
+            response.setCharacterEncoding("UTF-8");
             DownloadWriter.writeToResponse(response, bytes, "application/vnd.ms-excel", fileName);
         } catch (IOException e) {
             throw new RuntimeException("下载业务结算单出错：" + e.getMessage());
